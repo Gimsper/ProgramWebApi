@@ -1,4 +1,6 @@
-﻿namespace AdminApp.Core.DTO.Item
+﻿using Microsoft.AspNetCore.Http;
+
+namespace AdminApp.Core.DTO.Item
 {
     public class ItemAddDTO
     {
@@ -6,5 +8,6 @@
         public string Description { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public string Image { get; set; } = string.Empty;
+        public IFormFile? File { get; set; }
     }
 }

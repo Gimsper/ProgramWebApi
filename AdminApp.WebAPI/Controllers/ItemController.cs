@@ -1,7 +1,6 @@
 ﻿using AdminApp.Core.DTO.Item;
 using AdminApp.Core.Entities;
 using AdminApp.Services.Interfaces;
-using AdminApp.Utils.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +13,26 @@ namespace AdminApp.WebAPI.Controllers
         public ItemController(IItemService itemService, IMapper mapper) : base(itemService, mapper)
         {
             _itemService = itemService;
+        }
+
+        private async Task<string> ConvertImageToBase64Async(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return string.Empty;
+
+            try
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await file.CopyToAsync(memoryStream);
+                    return Convert.ToBase64String(memoryStream.ToArray());
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return string.Empty;
+            }
         }
 
         [HttpGet]
@@ -43,8 +62,11 @@ namespace AdminApp.WebAPI.Controllers
         [HttpPost]
         [Route("Add")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
-        public async Task<IActionResult> Add([FromBody] ItemAddDTO request)
+        public async Task<IActionResult> Add([FromForm] ItemAddDTO request)
         {
+            request.Image = request.File != null
+                ? await ConvertImageToBase64Async(request.File)
+                : string.Empty;
             var item = _mapper.Map<Item>(request);
             var result = await _itemService.AddAsync(item);
             return Ok(result.StateOperation);
@@ -53,8 +75,11 @@ namespace AdminApp.WebAPI.Controllers
         [HttpPut]
         [Route("Update")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
-        public async Task<IActionResult> Update([FromBody] ItemUpdateDTO request)
+        public async Task<IActionResult> Update([FromForm] ItemUpdateDTO request)
         {
+            request.Image = request.File != null
+                ? await ConvertImageToBase64Async(request.File)
+                : string.Empty;
             var item = _mapper.Map<Item>(request);
             var result = await _itemService.UpdateAsync(item);
             return Ok(result.StateOperation);
