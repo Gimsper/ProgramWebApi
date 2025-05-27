@@ -3,6 +3,7 @@ using AdminApp.Core.Entities;
 using AdminApp.Services.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AdminApp.WebAPI.Controllers
 {
@@ -80,8 +81,10 @@ namespace AdminApp.WebAPI.Controllers
         {
             request.Image = request.File != null
                 ? await ConvertImageToBase64Async(request.File)
-                : string.Empty;
-            request.ImageType = Path.GetExtension(request.File.FileName);
+                : request.Image;
+            request.ImageType = request.File != null
+                ? Path.GetExtension(request.File.FileName)
+                : request.ImageType;
             var item = _mapper.Map<Item>(request);
             var result = await _itemService.UpdateAsync(item);
             return Ok(result.StateOperation);
