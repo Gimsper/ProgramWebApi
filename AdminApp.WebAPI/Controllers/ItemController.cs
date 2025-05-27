@@ -67,6 +67,7 @@ namespace AdminApp.WebAPI.Controllers
             request.Image = request.File != null
                 ? await ConvertImageToBase64Async(request.File)
                 : string.Empty;
+            request.ImageType = Path.GetExtension(request.File.FileName);
             var item = _mapper.Map<Item>(request);
             var result = await _itemService.AddAsync(item);
             return Ok(result.StateOperation);
@@ -80,6 +81,7 @@ namespace AdminApp.WebAPI.Controllers
             request.Image = request.File != null
                 ? await ConvertImageToBase64Async(request.File)
                 : string.Empty;
+            request.ImageType = Path.GetExtension(request.File.FileName);
             var item = _mapper.Map<Item>(request);
             var result = await _itemService.UpdateAsync(item);
             return Ok(result.StateOperation);

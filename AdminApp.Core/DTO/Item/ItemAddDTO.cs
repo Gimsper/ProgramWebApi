@@ -8,6 +8,7 @@ namespace AdminApp.Core.DTO.Item
         public string Description { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public string Image { get; set; } = string.Empty;
+        public string ImageType { get; set; } = string.Empty;
         public IFormFile? File { get; set; }
     }
 }
